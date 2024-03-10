@@ -1,43 +1,53 @@
 #include <iostream>
-#include <chrono>
-
-// Function to get the current time since program start in seconds (as float)
-float getCurrentTimeInSeconds() {
-    static const auto start = std::chrono::high_resolution_clock::now();
-    auto now = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
-    return float (duration.count()) / 1000.0f;// Convert milliseconds to seconds
-}
-float calculateDeltatime(float &prev, float &current){
-        float delta = current - prev;
-        prev = current;
-        return delta;
-}
-void calculateFps(int &seconds, int &secondsPrev, int &frames, float &current, int &fps){
-    seconds = current;
-        if (seconds > secondsPrev){
-            fps = frames;
-            secondsPrev = seconds;
-            frames = 0;
+#include <SDL.h>
+#include "GameTimer.h"
+int main(int argc, char* argv[]) {
+    float a =0;
+    float start = 0;
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+    SDL_Window* window = SDL_CreateWindow("MyWindow", 50, 50, 640, 480, SDL_WINDOW_SHOWN);
+    if (window == nullptr) {
+        std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+    GameTimer gameTimer;
+    bool running = true;
+    bool isKeyPressed = false;
+    while (running) {
+        SDL_Event event;
+        if (a>5){
+            running = false;
         }
-}
-int main() {
-    float prev = 0;
-    float current = 0;
-    int frames = 0;
-    int fps = 0;
-    int seconds = 0;
-    int secondsPrev = 0;
-    while(true){
-        frames++;
-        current = getCurrentTimeInSeconds();
-        calculateFps(seconds, secondsPrev, frames, current, fps);
-        float deltaTime = calculateDeltatime(prev, current);
-        std:: cout << "fps      : "<< fps << "\n";
-        std:: cout << "deltaTime: "<< deltaTime << "\n";
-        for (int i = 0; i < 100000000; i++){
-
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    running = false;
+                    break;
+                case SDL_KEYDOWN:
+                    isKeyPressed = true;
+                    if (start == 0){
+                        start = gameTimer.getCurrentTimeInSeconds();
+                    }
+                    break;
+                case SDL_KEYUP:
+                    isKeyPressed = false;
+                    break;
+            }
+        }
+        float deltaTime = gameTimer.run();
+        if (isKeyPressed) {
+            if (deltaTime > 0.0f) {
+                a+=deltaTime;
+                std::cout << "delta: " << deltaTime << std::endl;
+            }
         }
     }
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
     return 0;
 }
