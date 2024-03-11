@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "GameTimer.h"
 #include <cmath>
+#include "Client.h"
 
 struct vector2 {
     float x;
@@ -54,7 +55,8 @@ int main(void) {
     camera.offset = (Vector2){ screenWidth / 2, screenHeight / 2 };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
-
+    Client c;
+    int x = c.run();
     GameTimer gameTimer;
 //    SetTargetFPS(144);
 
@@ -83,6 +85,7 @@ int main(void) {
         BeginMode2D(camera);
         DrawText(TextFormat("Delta time: %f", deltaTime), 10, 10, 20, LIGHTGRAY);
         DrawText(TextFormat("FPS: %i", gameTimer.fps), 10, 40, 20, LIGHTGRAY);
+        DrawText(TextFormat("Client: %i", x), 10, 70, 20, LIGHTGRAY);
         // Draw game objects
         player.Draw();
         EndMode2D();
