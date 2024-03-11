@@ -28,9 +28,6 @@ float GameTimer::run() {
     current = getCurrentTimeInSeconds();
     calculateFps(seconds, secondsPrev, frames, current, fps);
     float deltaTime = calculateDeltatime(prev, current);
-    for (int i = 0; i<10000000; i++){
-
-    }
     return deltaTime;
 }
 void GameTimer::calculateFps(int &seconds, int &secondsPrev, int &frames, float &current, int &fps){
